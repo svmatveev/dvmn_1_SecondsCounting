@@ -3,9 +3,12 @@ import pytimeparse
 import ptbot
 
 
-def read_secrets():
-    with open("./secrets/telegram_token.txt", "r") as file:
-        return file.readlines()
+with open("./secrets/telegram_token.txt", "r") as file:
+    secrets_list =  file.readlines()
+    telegram_token = secrets_list[0].rstrip()
+
+
+bot = ptbot.Bot(telegram_token)
 
 
 def render_progressbar(total, iteration, prefix='', suffix='', length=30, fill='█', zfill='░'):
@@ -24,7 +27,7 @@ def notify_progress(secs_left, chat_id, message_id, total_delay):
         bot.send_message(chat_id, "Время вышло")
 
 
-def execute_after_secs_specified(chat_id, message):
+def execute_with_period_set_in_mesage(chat_id, message):
     delay = pytimeparse.parse(message)
     if delay is None:
         message = "Некорректный формат времени задержки таймера"
@@ -34,10 +37,10 @@ def execute_after_secs_specified(chat_id, message):
         bot.create_countdown(delay, notify_progress, chat_id=chat_id, message_id=message_id, total_delay=delay)
 
 
-if __name__ == "__main__":
-    secrets_list = read_secrets()
-    TG_TOKEN = secrets_list[0].rstrip()
-
-    bot = ptbot.Bot(TG_TOKEN)
-    bot.reply_on_message(execute_after_secs_specified)
+def main():
+    bot.reply_on_message(execute_with_period_set_in_mesage)
     bot.run_bot()
+
+
+if __name__ == "__main__":
+    main()
