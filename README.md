@@ -1,6 +1,6 @@
 # Seconds timer
 
-[Devman](https://dvmn.org/modules/meeting-python/lesson/timer-in-telegram) Task 5 implementation of Python introduction module.
+[Devman](https://dvmn.org/modules/meeting-python/lesson/timer-in-telegram) Task 5 implementation from Python introduction module.
 
 This is a simple cooking-helper telegram bot.
 Supporting features:
