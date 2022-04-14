@@ -1,14 +1,19 @@
+from asyncio.windows_events import NULL
 import pytimeparse
 
 import ptbot
 
 
-with open("./secrets/telegram_token.txt", "r") as file:
-    secrets_list =  file.readlines()
-    telegram_token = secrets_list[0].rstrip()
+bot = NULL
 
 
-bot = ptbot.Bot(telegram_token)
+def getBot():
+    if bot == NULL:
+        with open("./secrets/telegram_token.txt", "r") as file:
+            secrets_list =  file.readlines()
+            telegram_token = secrets_list[0].rstrip()
+        bot = ptbot.Bot(telegram_token)
+    return bot
 
 
 def render_progressbar(total, iteration, prefix='', suffix='', length=30, fill='█', zfill='░'):
@@ -22,7 +27,7 @@ def render_progressbar(total, iteration, prefix='', suffix='', length=30, fill='
 
 def notify_progress(secs_left, chat_id, message_id, total_delay):
     progress_bar = render_progressbar(total_delay, total_delay-secs_left)
-    bot.update_message(chat_id, message_id, f"Осталось {secs_left} секунд\n{progress_bar}")
+    getBot().update_message(chat_id, message_id, f"Осталось {secs_left} секунд\n{progress_bar}")
     if secs_left == 0:
         bot.send_message(chat_id, "Время вышло")
 
@@ -31,15 +36,15 @@ def execute_with_period_set_in_mesage(chat_id, message):
     delay = pytimeparse.parse(message)
     if delay is None:
         message = "Некорректный формат времени задержки таймера"
-        bot.send_message(chat_id, message)
+        getBot().send_message(chat_id, message)
     else:
         message_id = bot.send_message(chat_id, "Запуск таймера")
-        bot.create_countdown(delay, notify_progress, chat_id=chat_id, message_id=message_id, total_delay=delay)
+        getBot().create_countdown(delay, notify_progress, chat_id=chat_id, message_id=message_id, total_delay=delay)
 
 
 def main():
-    bot.reply_on_message(execute_with_period_set_in_mesage)
-    bot.run_bot()
+    getBot().reply_on_message(execute_with_period_set_in_mesage)
+    getBot().run_bot()
 
 
 if __name__ == "__main__":
